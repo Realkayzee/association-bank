@@ -4,11 +4,8 @@ import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { Alfajores, Celo } from "@celo/rainbowkit-celo/chains";
 import Layout from "../components/Layout";
-import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import 'react-toastify/dist/ReactToastify.css';
 import {metaMaskWallet, omniWallet, rainbowWallet, walletConnectWallet} from "@rainbow-me/rainbowkit/wallets"
-import {ToastContainer} from "react-toastify";
 import { Valora, CeloWallet } from "@celo/rainbowkit-celo/wallets";
 
 const projectId = "celo-composer-project-id" // get one at https://cloud.walletconnect.com/app
@@ -44,7 +41,6 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains} coolMode={true}>
-        <ToastContainer position="bottom-center" />
         <Layout>
           <Component {...pageProps} />
         </Layout>
