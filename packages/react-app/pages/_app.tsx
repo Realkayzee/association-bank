@@ -8,6 +8,15 @@ import "@rainbow-me/rainbowkit/styles.css";
 import {metaMaskWallet, omniWallet, rainbowWallet, walletConnectWallet} from "@rainbow-me/rainbowkit/wallets"
 import { Valora, CeloWallet } from "@celo/rainbowkit-celo/wallets";
 
+// Import the global style sheet as well as the RainbowKit and react-toastify stylesheets.
+import 'react-toastify/dist/ReactToastify.css';
+import "../styles/globals.css";
+import "@rainbow-me/rainbowkit/styles.css";
+
+// Import the ToastContainer component from react-toastify to display notifications.
+import {ToastContainer} from "react-toastify";
+
+
 const projectId = "celo-composer-project-id" // get one at https://cloud.walletconnect.com/app
 
 const { chains, publicClient } = configureChains(
@@ -39,13 +48,14 @@ const wagmiConfig = createConfig({
 
 function App({ Component, pageProps }: AppProps) {
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains} coolMode={true}>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </RainbowKitProvider>
-    </WagmiConfig>
+      <WagmiConfig config={wagmiConfig}>
+        <RainbowKitProvider chains={chains} coolMode={true}>
+          <ToastContainer  position="top-center"/>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </RainbowKitProvider>
+      </WagmiConfig>
   )
 }
 
