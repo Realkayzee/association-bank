@@ -19,7 +19,6 @@ const Deposit = () => {
     const handleSubmit = (e:any) => {
         e.preventDefault();
         console.log(associationName, "skj");
-        
     }
     
     return (

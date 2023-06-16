@@ -12,9 +12,14 @@ export const assBankSetup = {
     abi: associationAbi,
 }
 
+interface sendParameterProps {
+    functionName: string;
+    args?: Array<any>;
+}
 
 
-export const useContractSend = (functionName:string, args: Array<any>) => {
+
+export const useContractSend = ({functionName, args}:sendParameterProps) => {
     // Prepare write to smart contract
 
     const {config} = usePrepareContractWrite({
