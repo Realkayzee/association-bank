@@ -67,7 +67,7 @@ const AssociationList = () => {
                                             type="button"
                                             className={`${customTheme.outline_button}`}
                                         >
-                                            <span className={`${customTheme.button_span}`}>
+                                            <span className={`${customTheme.button_span} bg-black`}>
                                                 View more
                                             </span>
                                         </button>

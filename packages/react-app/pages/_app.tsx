@@ -11,6 +11,7 @@ import { Valora, CeloWallet } from "@celo/rainbowkit-celo/wallets";
 // Import the global style sheet as well as the RainbowKit
 import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
+import { ToastContainer } from "react-toastify";
 
 
 const projectId = "celo-composer-project-id" // get one at https://cloud.walletconnect.com/app
@@ -46,6 +47,7 @@ function App({ Component, pageProps }: AppProps) {
   return (
       <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider chains={chains} coolMode={true} theme={darkTheme()}>
+          <ToastContainer />
           <Layout>
             <Component {...pageProps} />
           </Layout>

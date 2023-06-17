@@ -1,26 +1,17 @@
 import AssociationList from "@/components/AssociationList";
 import Deposit from "@/components/Deposit";
 import CreateAccount from "@/components/createAccount";
-import { customTheme } from "@/components/customTheme";
+import React from "react";
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
-export default function Home() {
+function Home() {
 
-  const click = () => {
-    toast("😊 Successfully created an Account", {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        theme: "light"
-    })
-}
   return (
     <div>
       <section className="p-20">
-        <h1 className="text-5xl text-center font-semibold tracking-wide" onClick={click}>
+        <h1 className="text-5xl text-center font-semibold tracking-wide">
           Welcome to Celo Association Bank
         </h1>
         <p className="text-center italic font-semibold text-xl mt-1 text-neutral-400">
@@ -37,3 +28,5 @@ export default function Home() {
   )
   
 }
+
+export default React.memo(Home)

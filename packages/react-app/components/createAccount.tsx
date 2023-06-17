@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { customTheme } from "./customTheme";
 import { useContractSend } from "@/hooks/contract/useContractSend";
 import { useAccount } from "wagmi";
@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useDebounce } from "use-debounce";
 import { XMarkIcon, FireIcon } from "@heroicons/react/24/outline";
 import { CustomConnector } from "./customConnector";
-import { Toast } from "flowbite-react";
 import { toast } from "react-toastify";
 
 
@@ -33,7 +32,7 @@ const CreateAccount = () => {
 
     const [excos, setExcos] = useState<string[]>([]);
 
-    const { writeError, writeSuccess, writeLoading, write, waitError, waitSuccess, waitLoading } = useContractSend({
+    const { writeLoading, write, waitError, waitSuccess, waitLoading } = useContractSend({
         functionName: "createAccount",
         args: [
             debouceValue.name,
@@ -43,29 +42,36 @@ const CreateAccount = () => {
         ]
     })
 
-    if(writeError|| waitError) {
-        toast.error("😞 An error occured while trying to create an account", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            theme: 'dark'
-        })
-    }
 
-    if(writeSuccess || waitSuccess) {
-        toast.success("😊 Successfully created an Account", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            theme: "dark"
-        })
-    }
-
-
+    useEffect(() => {
+        let rerun:boolean = true;
+        if(waitError && rerun) {
+            toast.error("Error occured while creating an account 😞", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                theme: 'dark'
+            })
+        }
+    
+        if(waitSuccess && rerun) {
+            toast.success("successfully created an account", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                theme: 'dark'
+            })
+            
+        }
+    
+      return () => {
+        rerun = false
+      }
+    }, [waitError, waitSuccess])
     
     
 
@@ -78,8 +84,13 @@ const CreateAccount = () => {
         write?.();
         console.log(debouceValue,excos, "kdsj");
     }
-    
-    
+
+    const addAddress = () => {
+        if(excos.length < 5 && formInput.address != '') {
+            setExcos([...excos, formInput.address])
+        }
+    }
+
     return (
         <>
             <div className="flex justify-center mt-8">
@@ -122,6 +133,7 @@ const CreateAccount = () => {
                                              required
                                              onChange={handleChange}
                                              autoComplete="off"
+                                             value={formInput.name}
                                             />
                                             <label htmlFor="name" className={`${customTheme.floating_label}`}>Association Name</label>
                                         </div>
@@ -134,6 +146,7 @@ const CreateAccount = () => {
                                              placeholder=" "
                                              required
                                              onChange={handleChange}
+                                             value={formInput.password}
                                             />
                                             <label htmlFor="password" className={`${customTheme.floating_label}`}>Password</label>
                                         </div>
@@ -145,8 +158,9 @@ const CreateAccount = () => {
                                              className={`${customTheme.floating_input}`}
                                              placeholder=" "
                                              required
-                                             onBlur={handleChange}
+                                             onChange={handleChange}
                                              autoComplete="off"
+                                             value={formInput.address}
                                             />
                                             <label htmlFor="address" className={`${customTheme.floating_label}`}>Executive Address</label>
                                         </div>
@@ -159,11 +173,11 @@ const CreateAccount = () => {
                                             <button
                                              type="button"
                                              className={`${customTheme.outline_button} text-black mr-2 mb-2 mt-4`}
-                                             onClick={() => (excos.length < 5 && formInput.address != '') ? setExcos([...excos, formInput.address]): ""}
+                                             onClick={addAddress}
                                             >
-                                            <span className={`${customTheme.button_span} bg-neutral-800`}>
-                                                Add Address
-                                            </span>
+                                                <span className={`${customTheme.button_span} bg-neutral-800`}>
+                                                    Add Address
+                                                </span>
                                             </button>
                                         </div>
                                         {
@@ -188,12 +202,11 @@ const CreateAccount = () => {
                                                 disabled={writeLoading || waitLoading}
                                                 >
                                                     {
-                                                        (writeLoading || waitLoading) ? "Loading..." : "Deposit"
+                                                        (writeLoading || waitLoading) ? "Loading..." : "Create Account"
                                                     }
                                                 </button>:
                                                 <CustomConnector color="bg-goldenyellow" text="text-black"/>
                                             }
-                                            
                                         </div>
                                     </form>
                                 </div>

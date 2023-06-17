@@ -4,39 +4,33 @@
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import associationAbi from "@/abi/association.abi.json";
 
-// Contract address of the two contract
-export const assBankCA = "0xBa69555747C6dc370f4AD1eE179e9Fc3ec56C26C";
-
-export const assBankSetup = {
-    address: assBankCA,
-    abi: associationAbi,
-}
 
 interface sendParameterProps {
     functionName: string;
     args?: Array<any>;
 }
 
+export const assBankCA = "0xdF528E47183fC3f3Acb6BeFDbA58e31e50fB6B0A";
 
 
 export const useContractSend = ({functionName, args}:sendParameterProps) => {
     // Prepare write to smart contract
 
     const {config} = usePrepareContractWrite({
-        address: assBankCA,
-        abi: associationAbi,
-        functionName,
-        args
+        address: assBankCA,         // The address of the smart contract,
+        abi: associationAbi,        // The ABI of the smart contract
+        functionName,               // The smart contract function name to call
+        args                        // The arguments to pass to the smart contract function
     })
 
     // Write to the smart contract using the prepared config
 
-    const {data:writeData, isError:writeError, isSuccess:writeSuccess, isLoading:writeLoading, write} = useContractWrite(config);
+    const {data:writeData, isLoading:writeLoading, write} = useContractWrite(config);
 
     const {isError:waitError, isSuccess:waitSuccess, isLoading:waitLoading } = useWaitForTransaction({
         hash: writeData?.hash
     })
 
 
-    return { writeError, writeSuccess, writeLoading, write, waitError, waitSuccess, waitLoading };
+    return { writeLoading, write, waitError, waitSuccess, waitLoading };
 }
