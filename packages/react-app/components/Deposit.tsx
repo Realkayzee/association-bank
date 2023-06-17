@@ -9,6 +9,7 @@ import { ethers } from "ethers";
 import { HexToDecimal } from "./helpers";
 import { toast } from "react-toastify";
 import { CustomConnector } from "./customConnector";
+import { data } from "autoprefixer";
 
 
 interface formType {
@@ -27,16 +28,60 @@ const Deposit = () => {
 
     const { address } = useAccount();
 
-    const { writeLoading, write, waitError, waitSuccess, waitLoading } = useContractSend({
+    const data = useApproveToken({
+        price: floating_amount,
+        user: address,
+        receipient: assBankCA,
         functionName: "deposit",
-        args: [
+        contractArgs: [
             floating_number,
             floating_amount
         ]
     })
 
-    const handleToast = useCallback(() => {
-        if(waitError) {
+    const  { approveTokenLoading, approveError, approveSuccess, approveLoading, tokenAuthorization, writeLoading, waitError, waitSuccess, waitLoading } = data
+
+
+    const handleChange = (e:any) => {
+        setFormDetails({...formDetails, [e.target.name]: e.target.value})
+    }
+
+    const handleSubmit = (e:any) => {
+        e.preventDefault();
+        tokenAuthorization?.();
+        console.log(floating_amount, floating_number, "value");
+    }
+
+    useEffect(() => {
+        let tokenToastRerun:boolean = true;
+        let contractToastRerun:boolean = true;
+
+        // toaster setup for result of approval. either error or success
+
+        if(approveSuccess && tokenToastRerun) {
+            toast.success("token approved successfully", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                theme: 'dark'
+            })
+        }
+        if(approveError && tokenToastRerun) {
+            toast.error("Error occured on token approval 😞", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                theme: 'dark'
+            })
+        }
+
+        // toaster setup for deposit transaction result, either error or success
+
+        if(waitError && contractToastRerun) {
             toast.error("Error occured while trying to deposit 😞", {
                 position: "top-center",
                 autoClose: 5000,
@@ -47,8 +92,8 @@ const Deposit = () => {
             })
         }
     
-        if(waitSuccess) {
-            toast.success("token approved successfully 😊", {
+        if(waitSuccess && contractToastRerun) {
+            toast.success("Deposit successful 😊", {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -57,79 +102,17 @@ const Deposit = () => {
                 theme: 'dark'
             })
         }
-    }, [waitError, waitSuccess])
-
-    handleToast()
-
-    const { tokenWrite, approveTokenLoading, approveError, approveSuccess, approveLoading } = useApproveToken({
-        price: floating_amount
-    })
-
-    if(approveSuccess) {
-        toast.success("token approved successfully", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            theme: 'dark'
-        })
-        write?.();
-    }
-    if(approveError) {
-        toast.error("Error occured on token approval 😞", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            theme: 'dark'
-        })
-    }
-
-    const { data:tokenRead } = useContractRead({
-        address: cUSDCA,
-        abi: tokenAbi,
-        functionName: "allowance",
-        args: [
-            address,
-            assBankCA
-        ]
-    })
-
-    /* This function checks if association bank contract has the necessary amount
-    ** allowance before requesting for amount approval
-    */
-
-    const tokenAuthorization = () => {
-        const priceInput = ethers.utils.parseEther(floating_amount ? floating_amount.toString() : "0")
-        // @ts-ignore
-        if(HexToDecimal(tokenRead?._hex) > HexToDecimal(priceInput?._hex)) {
-            write?.();
-        }else {
-            tokenWrite?.();
-        }
-    }
-
-
-    const handleChange = (e:any) => {
-        setFormDetails({...formDetails, [e.target.name]: e.target.value})
-    }
-
-    const handleSubmit = (e:any) => {
-        e.preventDefault();
-        tokenAuthorization()
-        console.log(floating_amount, floating_number, "value");
-    }
-
-    useEffect(() => {
-        let tokenToastRerun:boolean = true;
-        let 
     
       return () => {
-        second
+        if(approveSuccess || approveError) {
+            tokenToastRerun = false
+        }
+        if(waitError || waitSuccess) {
+            contractToastRerun = false;
+        }
       }
-    }, [third])
+    }, [approveError, approveSuccess, waitError, waitSuccess])
+    
     
     
     return (

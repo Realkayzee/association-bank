@@ -18,10 +18,10 @@ interface approveParamsProps {
     user?: string;
     receipient?: string;
     functionName: string;
-    args: Array<any>;
+    contractArgs?: Array<any>;
 }
 
-export const useApproveToken = ({price, user, receipient, functionName, args}: approveParamsProps) => {
+export const useApproveToken = ({price, user, receipient, functionName, contractArgs}: approveParamsProps) => {
 
 
     // Prepare write to smart contract for token contract
@@ -42,7 +42,10 @@ export const useApproveToken = ({price, user, receipient, functionName, args}: a
     const {data:writeData, isLoading:approveTokenLoading, write:tokenWrite } = useContractWrite(config);
 
     const {isError:approveError, isSuccess:approveSuccess, isLoading:approveLoading } = useWaitForTransaction({
-        hash: writeData?.hash
+        hash: writeData?.hash,
+        onSuccess() {
+            write?.()
+        }
     })
 
     // prepare contract for contract call
@@ -51,7 +54,7 @@ export const useApproveToken = ({price, user, receipient, functionName, args}: a
         address: assBankCA,
         abi: associationAbi,
         functionName,
-        args
+        args:contractArgs
     })
 
     const {data:contractData, isLoading:writeLoading, write} = useContractWrite(contractConfig)
@@ -59,6 +62,8 @@ export const useApproveToken = ({price, user, receipient, functionName, args}: a
     const {isError:waitError, isSuccess:waitSuccess, isLoading:waitLoading} = useWaitForTransaction({
         hash: contractData?.hash
     })
+
+    // Checking if the contract has user's allowance
 
     const { data:tokenRead } = useContractRead({
         address: cUSDCA,
@@ -78,9 +83,9 @@ export const useApproveToken = ({price, user, receipient, functionName, args}: a
         const priceinput = ethers.utils.parseEther(price ? price.toString() : "0")
         // @ts-ignore
         if(HexToDecimal(tokenRead?._hex) > HexToDecimal(priceinput?._hex)) {
-            write?.()
+            write?.();
         }else {
-            tokenWrite?.()
+            tokenWrite?.();
         }
     }
 
