@@ -39,9 +39,10 @@ const CreateAccount = () => {
             excos,
             (excos.length).toString(),
             debouceValue.password
-        ]
+        ],
+        enabled: (debouceValue.name != "")
     })
-
+    
 
     useEffect(() => {
         let rerun:boolean = true;

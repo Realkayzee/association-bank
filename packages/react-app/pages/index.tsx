@@ -10,7 +10,7 @@ function Home() {
 
   return (
     <div>
-      <section className="p-20">
+      <section className="p-20 mt-16">
         <h1 className="text-5xl text-center font-semibold tracking-wide">
           Welcome to Celo Association Bank
         </h1>

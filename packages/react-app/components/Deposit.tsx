@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { customTheme } from "./customTheme";
-import { useContractRead, useAccount } from "wagmi";
+import { useContractRead, useAccount, useContractWrite, useWaitForTransaction } from "wagmi";
 import { cUSDCA, useApproveToken } from "@/hooks/contract/useApproveToken";
 import tokenAbi from "@/abi/erc20ABI.json";
 import { assBankCA, useContractSend } from "@/hooks/contract/useContractSend";
@@ -10,6 +10,8 @@ import { HexToDecimal } from "./helpers";
 import { toast } from "react-toastify";
 import { CustomConnector } from "./customConnector";
 import { data } from "autoprefixer";
+import { useTokenCall } from "@/hooks/contract/useTokenCall";
+import { useSendAsync } from "@/hooks/contract/useSendAsync";
 
 
 interface formType {
@@ -20,27 +22,53 @@ interface formType {
 // component that handles association member deposit
 const Deposit = () => {
     const [formDetails, setFormDetails] = useState<formType>({
-        floating_number: '0',
-        floating_amount: '0'
+        floating_number: '',
+        floating_amount: ''
     })
 
     const [{floating_amount, floating_number}] = useDebounce(formDetails, 500);
 
     const { address } = useAccount();
 
-    const data = useApproveToken({
-        price: floating_amount,
-        user: address,
-        receipient: assBankCA,
-        functionName: "deposit",
-        contractArgs: [
-            floating_number,
-            floating_amount
-        ]
+    const {data:tokenData} = useTokenCall({
+        functionName: "allowance",
+        args: [
+            address,
+            assBankCA
+        ],
+        watch: true
     })
 
-    const  { approveTokenLoading, approveError, approveSuccess, approveLoading, tokenAuthorization, writeLoading, waitError, waitSuccess, waitLoading } = data
+    const {writeLoading, write, waitError, waitSuccess, waitLoading} = useContractSend({
+        functionName: "deposit",
+        args: [
+            floating_number,
+            BigInt(Number(floating_amount) * 1e18)
+        ],
+        enabled: (Number(tokenData) >= (Number(floating_amount) * 1e18) && floating_amount != "" && floating_number != "") 
+    })
 
+    const { data, isLoading, write:tokenWrite } = useApproveToken({
+        price: floating_amount
+    })
+
+    const {isError:tokenError, isLoading:tokenLoading} = useWaitForTransaction({
+        confirmations: 1,
+        hash: data?.hash,
+        onSuccess(){
+            write?.();
+        }
+    })
+
+    const tokenAuthorization = () => {
+        const priceInput = Number(floating_amount) * 1e18
+
+        if(Number(tokenData) >= priceInput){
+            write?.();
+        } else{
+            tokenWrite?.();
+        }
+    }
 
     const handleChange = (e:any) => {
         setFormDetails({...formDetails, [e.target.name]: e.target.value})
@@ -48,73 +76,41 @@ const Deposit = () => {
 
     const handleSubmit = (e:any) => {
         e.preventDefault();
-        tokenAuthorization?.();
-        console.log(floating_amount, floating_number, "value");
+
+        tokenAuthorization()
     }
 
     useEffect(() => {
-        let tokenToastRerun:boolean = true;
-        let contractToastRerun:boolean = true;
+      let rerun:boolean = true;
 
-        // toaster setup for result of approval. either error or success
+      if((waitError || tokenError) && rerun){
+        toast.error("Error occured while deposition into an account", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            theme: 'dark'
+        })
+      }
 
-        if(approveSuccess && tokenToastRerun) {
-            toast.success("token approved successfully", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                theme: 'dark'
-            })
-        }
-        if(approveError && tokenToastRerun) {
-            toast.error("Error occured on token approval 😞", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                theme: 'dark'
-            })
-        }
-
-        // toaster setup for deposit transaction result, either error or success
-
-        if(waitError && contractToastRerun) {
-            toast.error("Error occured while trying to deposit 😞", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                theme: 'dark'
-            })
-        }
-    
-        if(waitSuccess && contractToastRerun) {
-            toast.success("Deposit successful 😊", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                theme: 'dark'
-            })
-        }
+      if(waitSuccess && rerun){
+        toast.success("successfully deposited into an account", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            theme: 'dark'
+        })
+      }
     
       return () => {
-        if(approveSuccess || approveError) {
-            tokenToastRerun = false
-        }
-        if(waitError || waitSuccess) {
-            contractToastRerun = false;
-        }
+        rerun = false
       }
-    }, [approveError, approveSuccess, waitError, waitSuccess])
+    }, [waitError, waitSuccess, tokenError])
     
-    
-    
+
     return (
         <div className="bg-neutral-800 w-1/2 mx-auto mt-24 rounded-lg p-8">
             <h2 className="font-bold">Member Deposit</h2>
@@ -150,11 +146,11 @@ const Deposit = () => {
                         address ?
                         <button
                         type="submit"
-                        disabled={approveTokenLoading || approveLoading || waitLoading || writeLoading}
+                        disabled={writeLoading || waitLoading || isLoading || tokenLoading}
                         className={`${customTheme.fill_button} text-neutral-800 mr-2 mb-2`}
                         >
                             {
-                                (approveTokenLoading || approveLoading || waitLoading || writeLoading) ? "Loading..." : "Deposit"
+                                (writeLoading || waitLoading || isLoading || tokenLoading) ? "Loading..." : "Deposit"
                             }
                         </button>:
                         <CustomConnector color="bg-goldenyellow" text="text-black" />
