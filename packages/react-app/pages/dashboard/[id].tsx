@@ -102,7 +102,8 @@ const DashBoard = () => {
                 <form className="mt-8" onSubmit={handleSubmit}>
                     <div className="relative w-full mb-6 z-0 group">
                     <input
-                     type="number"
+                     type="tel"
+                     pattern=""
                      name="floating_deposit"
                      id="floating_deposit"
                      className={`${customTheme.floating_input}`}

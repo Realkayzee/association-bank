@@ -8,7 +8,8 @@ import { useContractCall } from "@/hooks/contract/useContractCall";
 const AssociationList = () => {
 
     const {data}:any = useContractCall({
-        functionName: "getAllAssociations"
+        functionName: "getAllAssociations",
+        watch: true
     })
 
     

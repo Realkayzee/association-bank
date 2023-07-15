@@ -102,7 +102,9 @@ const Deposit = () => {
       }
     
       return () => {
-        rerun = false
+        if(waitError || tokenError || waitSuccess){
+            rerun = false
+        }
       }
     }, [waitError, waitSuccess, tokenError])
     

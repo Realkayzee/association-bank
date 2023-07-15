@@ -68,7 +68,7 @@ const Withdraw = () => {
             <form onSubmit={handleSubmit}>
                 <div className="relative w-full mb-6 z-0 group">
                     <input
-                     type="number" 
+                     type="tel" 
                      name="floating_deposit" 
                      id="floating_deposit" 
                      className={`${customTheme.floating_input}`} 

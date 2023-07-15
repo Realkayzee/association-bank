@@ -7,6 +7,7 @@ import { useDebounce } from "use-debounce";
 import { useAccount } from "wagmi";
 import { CustomConnector } from "@/components/customConnector";
 import { toast } from "react-toastify";
+import { HexToDecimal } from '../../../components/helpers';
 
 const Executives = () => {
     const route = useRouter()
@@ -17,7 +18,7 @@ const Executives = () => {
 
 
 
-    const { writeLoading, write, waitError, writeError, prepareError, waitSuccess, waitLoading } = useContractSend({
+    const { writeLoading, write, waitError, writeError, prepareError, waitSuccess, waitLoading, waitData } = useContractSend({
         functionName: "initTransaction",
         args:[
             BigInt(Number(debounceAmount) * 1e18),
@@ -25,6 +26,9 @@ const Executives = () => {
         ],
         enabled: (debounceAmount != "")
     })
+
+    console.log(HexToDecimal(waitData?.logs[0].data), "data");
+    
 
 
     const handleSubmit = (e:any) => {
@@ -48,7 +52,7 @@ const Executives = () => {
       }
 
       if(waitSuccess && rerun){
-        toast.success("successfully initiated withdrawal", {
+        toast.success(`successfully initiated withdrawal with order number ${HexToDecimal(waitData?.logs[0].data)}`, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -72,7 +76,7 @@ const Executives = () => {
             <form onSubmit={handleSubmit}>
                 <div className="relative w-full mb-6 z-0 group">
                     <input
-                     type="number"
+                     type="tel"
                      name="floating_deposit" 
                      id="floating_deposit" 
                      className={`${customTheme.floating_input}`} 

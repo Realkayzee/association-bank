@@ -32,7 +32,7 @@ const CreateAccount = () => {
 
     const [excos, setExcos] = useState<string[]>([]);
 
-    const { writeLoading, write, waitError, waitSuccess, waitLoading } = useContractSend({
+    const { writeLoading, write, waitError, waitSuccess, waitLoading, prepareError } = useContractSend({
         functionName: "createAccount",
         args: [
             debouceValue.name,
@@ -40,7 +40,7 @@ const CreateAccount = () => {
             (excos.length).toString(),
             debouceValue.password
         ],
-        enabled: (debouceValue.name != "")
+        enabled: (debouceValue.name != "" && debouceValue.password != "")
     })
     
 
@@ -83,7 +83,6 @@ const CreateAccount = () => {
     const handleSubmit = (e:any) => {
         e.preventDefault();
         write?.();
-        console.log(debouceValue,excos, "kdsj");
     }
 
     const addAddress = () => {
@@ -194,6 +193,11 @@ const CreateAccount = () => {
                                                 </div>
                                             )
                                         }
+                                        <p className='text-red-600'>
+                                            {
+                                                (prepareError && debouceValue.password != "") && "You cannot create account twice"
+                                            }
+                                        </p>
                                         <div className="flex justify-center mt-8">
                                             {
                                                 address ?

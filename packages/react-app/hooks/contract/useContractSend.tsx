@@ -29,9 +29,9 @@ export const useContractSend = ({functionName, args, enabled}:sendParameterProps
 
     const {data:writeData, isError:writeError, isLoading:writeLoading, write} = useContractWrite(config);
 
-    const {isError:waitError, isSuccess:waitSuccess, isLoading:waitLoading } = useWaitForTransaction({
+    const {isError:waitError, isSuccess:waitSuccess, isLoading:waitLoading, data:waitData } = useWaitForTransaction({
         hash: writeData?.hash
     })
 
-    return { writeLoading, write, waitError, writeError, prepareError, waitSuccess, waitLoading };
+    return { writeLoading, write, waitError, writeError, prepareError, waitSuccess, waitLoading, waitData };
 }
