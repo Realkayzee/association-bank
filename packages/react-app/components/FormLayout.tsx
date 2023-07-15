@@ -34,17 +34,20 @@ const statusButtons: statusProps[] = [
 const FormLayout = (props:Props) => {
     const router = useRouter()
     const {id:ID} = router.query
-    console.log(props.result, "result");
     
     return (
         <DashboardLayout>
             <div>
-                <div className="flex flex-row gap-4 bg-neutral-800 py-2 px-5 rounded-lg font-bold">
-                    <div className="basis-1/6">
+                <div className="flex flex-row gap-4 justify-between bg-neutral-800 py-2 px-5 rounded-lg font-bold">
+                    <div>
                         Result:
                     </div>
-                    <div className="basis-5/6 text-right">
-                        {props.result}
+                    <div>
+                        <div className="flex flex-row gap-2">
+                            <p className="font-normal">
+                                {props.result}
+                            </p>
+                        </div>
                     </div>
                 </div>
                 <div className="bg-neutral-800 w-2/3 mx-auto rounded-lg p-2 px-4 my-12">

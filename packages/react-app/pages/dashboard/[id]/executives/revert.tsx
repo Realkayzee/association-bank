@@ -67,7 +67,7 @@ const Revert = () => {
             <form onSubmit={handleSubmit}>
                 <div className="relative w-full mb-6 z-0 group">
                     <input
-                     type="tel"
+                     type="number"
                      name="floating_deposit" 
                      id="floating_deposit" 
                      className={`${customTheme.floating_input}`} 

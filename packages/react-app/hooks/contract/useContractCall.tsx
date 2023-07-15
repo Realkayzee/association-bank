@@ -8,9 +8,10 @@ export interface callParameterProps {
     functionName: string;
     args?: Array<any>;
     watch?: boolean;
+    enabled?: boolean;
 }
 
-export const useContractCall = ({functionName, args, watch}: callParameterProps) => {
+export const useContractCall = ({functionName, args, watch, enabled}: callParameterProps) => {
 
     const data = useContractRead({
         address: assBankCA,     // The address of the smart contract,
@@ -18,6 +19,7 @@ export const useContractCall = ({functionName, args, watch}: callParameterProps)
         functionName,           // The smart contract function name to call
         args,                   // The arguments to pass to the smart contract function
         watch,                  // A boolean to watch for changes in the smart contract. If true, the hook will re-run when the smart contract changes
+        enabled,
         onError: (err) => {
             console.log({ err })
         }
