@@ -2,39 +2,25 @@ import React from "react";
 import { Table } from "flowbite-react";
 import { customTheme } from "./customTheme";
 import Link from "next/link";
+import { useContractCall } from "@/hooks/contract/useContractCall";
+
 
 const AssociationList = () => {
+
+    const {data}:any = useContractCall({
+        functionName: "getAllAssociations"
+    })
+
+    
+    let associationData;
+    if(data) associationData = data
+
     const tableHeadCell: string[] = [
         "Name",
         "Account Number",
         "Creator Address",
         " "
-    ] 
-
-    const associationDetails: any[] = [
-        {
-            name: "Celo Bank1",
-            account: "00001",
-            creator: "0x230202a90edededdeadcbba263832"
-        },
-        {
-            name: "Celo Bank2",
-            account: "00002",
-            creator: "0x230202a90edededdeadcbba263832"
-        },
-        {
-            name: "Celo Bank3",
-            account: "00003",
-            creator: "0x230202a90edededdeadcbba263832"
-        },
-        {
-            name: "Celo Bank4",
-            account: "00004",
-            creator: "0x230202a90edededdeadcbba263832"
-        },
     ]
-
-    console.log("rerender table");
     
     return (
         <div>
@@ -50,19 +36,19 @@ const AssociationList = () => {
                 </Table.Head>
                 <Table.Body className="divide-y divide-neutral-700 text-neutral-400 bg-black">
                     {
-                        associationDetails.map((details, id) => (
+                        associationData?.map((details:any, id:any) => (
                             <Table.Row key={id} className="hover:bg-black">
                                 <Table.Cell>
-                                    {details.name}
+                                    {details.infoAssName}
                                 </Table.Cell>
                                 <Table.Cell>
-                                    {details.account}
+                                    {Number(details.associationAcctNumber).toString().padStart(4, "0")}
                                 </Table.Cell>
                                 <Table.Cell>
-                                    {details.creator}
+                                    {(details.infoAssCreator).slice(0, 6)}....{(details.infoAssCreator).slice(35, 42)}
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <Link href={`/dashboard/${id}`}>
+                                    <Link href={`/dashboard/${id + 1}`}>
                                         <button
                                             type="button"
                                             className={`${customTheme.outline_button}`}

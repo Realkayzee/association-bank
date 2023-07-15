@@ -1,17 +1,12 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { customTheme } from "./customTheme";
-import { useContractRead, useAccount, useContractWrite, useWaitForTransaction } from "wagmi";
-import { cUSDCA, useApproveToken } from "@/hooks/contract/useApproveToken";
-import tokenAbi from "@/abi/erc20ABI.json";
+import { useAccount, useWaitForTransaction } from "wagmi";
+import { useApproveToken } from "@/hooks/contract/useApproveToken";
 import { assBankCA, useContractSend } from "@/hooks/contract/useContractSend";
-import { ethers } from "ethers";
-import { HexToDecimal } from "./helpers";
 import { toast } from "react-toastify";
 import { CustomConnector } from "./customConnector";
-import { data } from "autoprefixer";
 import { useTokenCall } from "@/hooks/contract/useTokenCall";
-import { useSendAsync } from "@/hooks/contract/useSendAsync";
 
 
 interface formType {
@@ -38,11 +33,12 @@ const Deposit = () => {
         ],
         watch: true
     })
+    
 
     const {writeLoading, write, waitError, waitSuccess, waitLoading} = useContractSend({
         functionName: "deposit",
         args: [
-            floating_number,
+            parseInt(floating_number),
             BigInt(Number(floating_amount) * 1e18)
         ],
         enabled: (Number(tokenData) >= (Number(floating_amount) * 1e18) && floating_amount != "" && floating_number != "") 
