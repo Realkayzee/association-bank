@@ -4,8 +4,6 @@ import CreateAccount from "@/components/createAccount";
 import React from "react";
 import 'react-toastify/dist/ReactToastify.css';
 
-
-
 function Home() {
 
   return (

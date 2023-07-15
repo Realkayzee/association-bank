@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { FC, ReactNode } from "react";
 
 interface Props {
@@ -24,14 +25,13 @@ const sideItems:sidebar[] = [
     {
         name: "Status",
         link: "status"
-    },
-    {
-        name: "Help",
-        link: ""
     }
 ]
 
 const DashboardLayout: FC<Props> = ({children}) => {
+    const router = useRouter()
+    const {id:ID} = router.query    
+
     return (
         <div className="py-24">
             <div className="w-4/5 mx-auto bg-neutral-800 rounded-lg p-8">
@@ -40,7 +40,7 @@ const DashboardLayout: FC<Props> = ({children}) => {
                         <div className="flex flex-col divide-y divide-neutral-800 h-96">
                             {
                                 sideItems.map((item, id) => (
-                                    <Link href={`/dashboard/${0}/${item.link}`} key={id}>
+                                    <Link href={`/dashboard/${ID}/${item.link}`} key={id}>
                                         <div className="py-4 px-2 font-bold text-md rounded-sm hover:bg-neutral-800">
                                             {item.name}
                                         </div>

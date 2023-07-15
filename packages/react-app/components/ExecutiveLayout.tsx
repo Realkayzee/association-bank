@@ -1,60 +1,48 @@
-import Link from "next/link";
-import { ReactNode } from "react";
 import DashboardLayout from "./DashboardLayout";
 import { useRouter } from "next/router";
+import Link from "next/link";
+import {statusProps} from "./FormLayout"
+import { ReactNode } from 'react';
 
 interface Props {
     children: ReactNode;
-    result: string;
-}
-export interface statusProps {
-    name: string;
-    link: string
 }
 
-const statusButtons: statusProps[] = [
+
+const executiveButtons: statusProps[] = [
     {
-        name: "Check Balance",
+        name: "Initiate Withdrawal",
         link: ""
     },
     {
-        name: "Aproval Count",
-        link: "approval"
+        name: "Approve Withdrawal",
+        link: "approve"
     },
     {
-        name: "Exco Request",
-        link: "request"
+        name: "Revert Withdrawal",
+        link: "revert"
     },
     {
-        name: "User Deposit",
-        link: "deposit"
+        name: "Withdraw",
+        link: "withdraw"
     }
 ]
 
-const FormLayout = (props:Props) => {
+const ExecutiveLayout = (props:Props) => {
     const router = useRouter()
     const {id:ID} = router.query
-    console.log(props.result, "result");
-    
+
     return (
         <DashboardLayout>
             <div>
-                <div className="flex flex-row gap-4 bg-neutral-800 py-2 px-5 rounded-lg font-bold">
-                    <div className="basis-1/6">
-                        Result:
-                    </div>
-                    <div className="basis-5/6 text-right">
-                        {props.result}
-                    </div>
-                </div>
                 <div className="bg-neutral-800 w-2/3 mx-auto rounded-lg p-2 px-4 my-12">
                     {props.children}
                 </div>
                 <div className="flex flex-row border-y border-y-neutral-700 divide-x divide-neutral-700">
                     {
-                        statusButtons.map((item, id) => (
+                        executiveButtons.map((item, id) => (
                             <div className="basis-1/4 text-center hover:bg-neutral-800" key={id}>
-                                <Link href={`/dashboard/${ID}/status/${item.link}`}>
+                                <Link href={`/dashboard/${ID}/executives/${item.link}`}>
                                     <div className="p-4">
                                         {item.name}
                                     </div>
@@ -68,4 +56,4 @@ const FormLayout = (props:Props) => {
     );
 }
 
-export default FormLayout;
+export default ExecutiveLayout;

@@ -12,14 +12,14 @@ const request = () => {
             <form>
                 <div className="relative w-full mb-6 z-0 group">
                     <input type="tel" pattern="[0-9]{7}" name="floating_deposit" id="floating_deposit" className={`${customTheme.floating_input}`} placeholder=" " required />
-                    <label htmlFor="floating_deposit" className={`${customTheme.floating_label}`}>Amount to Deposit</label>
+                    <label htmlFor="floating_deposit" className={`${customTheme.floating_label}`}>Order Number</label>
                 </div>
                 <div className="flex justify-center mt-8">
                     <button
                     type="button"
                     className={`${customTheme.fill_button} text-neutral-800 mr-2 mb-2`}
                     >
-                        Deposit
+                        Check Request
                     </button>
                 </div>
             </form>

@@ -1,32 +1,29 @@
 import ExecutiveLayout from "@/components/ExecutiveLayout";
-import { memo, useEffect, useState } from "react";
+import { CustomConnector } from "@/components/customConnector";
 import { customTheme } from "@/components/customTheme";
-import { useRouter } from "next/router";
 import { useContractSend } from "@/hooks/contract/useContractSend";
+import { useRouter } from "next/router";
+import { memo, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useDebounce } from "use-debounce";
 import { useAccount } from "wagmi";
-import { CustomConnector } from "@/components/customConnector";
-import { toast } from "react-toastify";
 
-const Executives = () => {
+const Revert = () => {
     const route = useRouter()
     const {id:number} = route.query
-    const [amount, setAmount] = useState("")
-    const [debounceAmount] = useDebounce(amount, 500)
     const { address } = useAccount()
-
-
+    const [order, setOrder] = useState("")
+    const [debounceOrder] = useDebounce(order, 500)
 
     const { writeLoading, write, waitError, writeError, prepareError, waitSuccess, waitLoading } = useContractSend({
-        functionName: "initTransaction",
-        args:[
-            BigInt(Number(debounceAmount) * 1e18),
-            number
+        functionName: "revertApproval",
+        args: [
+            number,
+            debounceOrder
         ],
-        enabled: (debounceAmount != "")
+        enabled: (debounceOrder != "")
     })
-
-
+    
     const handleSubmit = (e:any) => {
         e.preventDefault();
 
@@ -34,41 +31,39 @@ const Executives = () => {
     }
 
     useEffect(() => {
-      let rerun:boolean = true
+        let rerun:boolean = true
 
-      if((waitError || writeError) && rerun){
-        toast.error("Can't initiate withdrawal", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            theme: 'dark'
-        })
-      }
+        if((waitError || writeError) && rerun){
+            toast.error("Can't approve withdrawal", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                theme: 'dark'
+            })
+        }
 
-      if(waitSuccess && rerun){
-        toast.success("successfully initiated withdrawal", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            theme: 'dark'
-        })
-      }
-    
-      return () => {
-        rerun = false
-      }
+        if(waitSuccess && rerun){
+            toast.success("successfully initiated withdrawal", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                theme: 'dark'
+            })
+        }
+
+        return () => {
+            rerun = false
+        }
 
     }, [waitError, writeError, waitSuccess])
-    
-
 
     return (
         <ExecutiveLayout>
-            <h5 className="text-center mb-2 font-bold py-4">Initiate Withdrawal</h5>
+            <h5 className="text-center mb-2 font-bold py-4">Revert Approval</h5>
             <form onSubmit={handleSubmit}>
                 <div className="relative w-full mb-6 z-0 group">
                     <input
@@ -78,13 +73,13 @@ const Executives = () => {
                      className={`${customTheme.floating_input}`} 
                      placeholder=" " 
                      required
+                     onChange={(e) => setOrder(e.target.value)}
                      autoComplete="off"
-                     onChange={(e) => setAmount(e.target.value)}
                     />
-                    <label htmlFor="floating_deposit" className={`${customTheme.floating_label}`}>Amount to withdraw</label>
+                    <label htmlFor="floating_deposit" className={`${customTheme.floating_label}`}>Order Number</label>
                     <p className="text-red-600">
                         {
-                            (prepareError && debounceAmount != "") && "You cannot initiate withdrawal"
+                            (prepareError && debounceOrder != "") && "You cannot revert approval"
                         }
                     </p>
                 </div>
@@ -97,7 +92,7 @@ const Executives = () => {
                         disabled={writeLoading || waitLoading}
                         >
                             {
-                                (writeLoading || waitLoading) ? "Loading...." : "Initiate"
+                                (writeLoading || waitLoading) ? "Loading...." : "Revert"
                             }
                         </button> :
                         <CustomConnector color="bg-goldenyellow" text="text-black" />
@@ -108,4 +103,4 @@ const Executives = () => {
     );
 }
 
-export default memo(Executives);
+export default memo(Revert);

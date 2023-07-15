@@ -12,6 +12,7 @@ import { Valora, CeloWallet } from "@celo/rainbowkit-celo/wallets";
 import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const projectId = "celo-composer-project-id" // get one at https://cloud.walletconnect.com/app
