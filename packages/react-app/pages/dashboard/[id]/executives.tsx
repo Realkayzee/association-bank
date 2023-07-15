@@ -66,7 +66,7 @@ const Executives = () => {
         rerun = false
       }
 
-    }, [waitError, writeError, waitSuccess])
+    }, [waitError, writeError, waitSuccess, waitData])
     
 
 
