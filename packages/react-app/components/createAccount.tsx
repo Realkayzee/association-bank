@@ -109,7 +109,7 @@ const CreateAccount = () => {
             {
                 openModal && (
                     <div className="fixed top-0 left-0 w-full z-40 bg-neutral-0.5 backdrop-blur-sm">
-                        <div className="min-h-screen mt-28 py-32">
+                        <div className="min-h-screen py-32">
                             {/* Modal Content */}
                             <div className="bg-neutral-800 rounded-lg shadow-lg w-1/2 lg:w-2/5 xl:w-1/3 mx-auto divide-y divide-neutral-600 overflow-y-auto">
                                 {/* Modal Header */}
