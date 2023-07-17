@@ -102,15 +102,15 @@ const DashBoard = () => {
                 <form className="mt-8" onSubmit={handleSubmit}>
                     <div className="relative w-full mb-6 z-0 group">
                     <input
-                     type="tel"
-                     pattern=""
-                     name="floating_deposit"
-                     id="floating_deposit"
-                     className={`${customTheme.floating_input}`}
-                     placeholder=" "
-                     required
-                     onChange={(e) => setAmount(e.target.value)}
-                     autoComplete="off"
+                        type="number"
+                        pattern=""
+                        name="floating_deposit"
+                        id="floating_deposit"
+                        className={`${customTheme.floating_input}`}
+                        placeholder=" "
+                        required
+                        onChange={(e) => setAmount(e.target.value)}
+                        autoComplete="off"
                     />
                         <label htmlFor="floating_deposit" className={`${customTheme.floating_label}`}>Amount to Deposit</label>
                     </div>
