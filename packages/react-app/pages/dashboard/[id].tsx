@@ -26,12 +26,12 @@ const DashBoard = () => {
         ],
         watch: true
     })
-
+    
     const {writeLoading, write, waitError, waitSuccess, waitLoading} = useContractSend({
         functionName: "deposit",
         args: [
             number,
-            BigInt(Number(debounceAmount) * 1e18)
+            isNaN(Number(debounceAmount)) ? "0" : BigInt(Number(debounceAmount) * 1e18)
         ],
         enabled: (Number(tokenData) >= (Number(debounceAmount) * 1e18) && debounceAmount != "")
     })
@@ -103,7 +103,7 @@ const DashBoard = () => {
                     <div className="relative w-full mb-6 z-0 group">
                     <input
                      type="tel"
-                     pattern=""
+                     pattern="[0-9]{0,}"
                      name="floating_deposit"
                      id="floating_deposit"
                      className={`${customTheme.floating_input}`}

@@ -39,7 +39,7 @@ const Deposit = () => {
         functionName: "deposit",
         args: [
             parseInt(floating_number),
-            BigInt(Number(floating_amount) * 1e18)
+            isNaN(Number(floating_amount)) ? "0" : BigInt(Number(floating_amount) * 1e18)
         ],
         enabled: (Number(tokenData) >= (Number(floating_amount) * 1e18) && floating_amount != "" && floating_number != "") 
     })

@@ -21,13 +21,11 @@ const Executives = () => {
     const { writeLoading, write, waitError, writeError, prepareError, waitSuccess, waitLoading, waitData } = useContractSend({
         functionName: "initTransaction",
         args:[
-            BigInt(Number(debounceAmount) * 1e18),
+            isNaN(Number(debounceAmount)) ? "0" : BigInt(Number(debounceAmount) * 1e18),
             number
         ],
         enabled: (debounceAmount != "")
     })
-
-    console.log(HexToDecimal(waitData?.logs[0].data), "data");
     
 
 

@@ -26,7 +26,7 @@ export const useApproveToken = ({price}: approveParamsProps) => {
         functionName: "approve",    // The smart contract function name to call
         args: [                     
             assBankCA,              // The association bank contract address
-            BigInt(Number(price) * 1e18)                  // The deposit amount input
+            isNaN(Number(price)) ? "0" : BigInt(Number(price) * 1e18)                  // The deposit amount input
         ],
         onError: (err) => {
             console.log({err});
