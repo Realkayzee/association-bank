@@ -1,3 +1,10 @@
+# Association bank
+association-bank is an association based bank where members of association can deposit into association banks and only excutive members can withdraw, the withdrawal of any executive member can  only be possible with the approval of other executive members.
+
+* Member of an association can view association balance by using the association password
+* Only executive members can initiate withdrawal, approve withrawal, revert approval and withdraw
+* The status page in the dashboard is available for any member to check the status of any transaction in the association for transparency
+
 <!-- TITLE -->
 <p align="center"> 
   <img width="100px" src="https://github.com/celo-org/celo-composer/blob/main/images/readme/celo_isotype.svg" align="center" alt="Celo" />
