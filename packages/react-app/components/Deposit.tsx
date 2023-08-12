@@ -116,6 +116,7 @@ const Deposit = () => {
                 <div className="relative w-full mb-6 z-0 group">
                     <input
                      type="tel"
+                     pattern="[0-9]{0,}"
                      name="floating_number" 
                      id="floating_number" 
                      className={`${customTheme.floating_input}`} 
@@ -129,6 +130,7 @@ const Deposit = () => {
                 <div className="relative w-full mb-6 z-0 group">
                     <input
                      type="tel"
+                     pattern="[0-9]{0,}"
                      name="floating_amount" 
                      id="floating_amount" 
                      className={`${customTheme.floating_input}`} 
