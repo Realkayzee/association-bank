@@ -5,6 +5,9 @@
 Association bank is an association based bank where members of association can deposit into association banks and only excutive members can withdraw, the withdrawal of any executive member can  only be possible with the approval of other executive members (similar to multisig wallet).
 
 The genesis of each account start from creating an account with the "create account" button in the home page
+    - The password must contain at least one lowercase, uppercase, number and 8 characters long
+    - The create account has a button "add address" to add multiple exco address before submitting the form
+    - The executive address input only accept ethereum address
 
 ## Home page
 ![Alt text](image.png)

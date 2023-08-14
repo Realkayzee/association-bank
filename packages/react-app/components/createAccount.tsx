@@ -1,52 +1,88 @@
+// The import list consist of custom hooks and hooks from wagmi, useDebounce, react-toastify and heroicons 
 import React, { useEffect } from "react";
 import { customTheme } from "./customTheme";
 import { useContractSend } from "@/hooks/contract/useContractSend";
 import { useAccount } from "wagmi";
 import { useState } from "react";
-import { useDebounce } from "use-debounce";
-import { XMarkIcon, FireIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { CustomConnector } from "./customConnector";
 import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
 
-
-interface formProps {
-    name: string,
+interface IFormInput {
+    associationName: string,
     password: string,
     address: string
 }
 
 
+// Component responsible for creating association account
 
 const CreateAccount = () => {
     const [openModal, setOpenModal] = useState<boolean>(false);
 
     const {address} = useAccount();
 
-    const [formInput, setFormInput] = useState<formProps>({
-        name: '',
-        password: '',
-        address: '',
-    })
+    
 
-    const [debouceValue] = useDebounce(formInput, 500)
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors }
+    } = useForm<IFormInput>();
+
 
     const [excos, setExcos] = useState<string[]>([]);
+
+    const [inputedData, setInputedData] = useState({
+        name: '',
+        password: ''
+    })
 
     const { writeLoading, write, waitError, waitSuccess, waitLoading, prepareError } = useContractSend({
         functionName: "createAccount",
         args: [
-            debouceValue.name,
+            inputedData.name,
             excos,
             (excos.length).toString(),
-            debouceValue.password
+            inputedData.password
         ],
-        enabled: (debouceValue.name != "" && debouceValue.password != "")
+        enabled: (excos.length > 0)
     })
+
+    const addAddress = () => {
+        if(excos.length < 5 && watch("address").match(/(\b0x[A-fa-f0-9]{40}\b)/g) && !excos.includes(watch("address"))) {
+            setExcos([...excos, watch("address")])
+        }
+    }
+
+    const submitHandler = (data:IFormInput) => {
+        setInputedData({
+            name: data.associationName,
+            password: data.password
+        })
+        write?.()
+    }
+    console.log(prepareError,inputedData, "watch");
+
     
 
     useEffect(() => {
         let rerun:boolean = true;
+
+        if(prepareError){
+            toast.error("You cannot create multiple account😞", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                theme: 'dark'
+            })
+        }
         if(waitError && rerun) {
+            // error message as feedback if transaction isn't successful
             toast.error("Error occured while creating an account 😞", {
                 position: "top-center",
                 autoClose: 5000,
@@ -58,6 +94,7 @@ const CreateAccount = () => {
         }
     
         if(waitSuccess && rerun) {
+            // success message as feedback if transaction is successful
             toast.success("successfully created an account", {
                 position: "top-center",
                 autoClose: 5000,
@@ -72,24 +109,7 @@ const CreateAccount = () => {
       return () => {
         rerun = false
       }
-    }, [waitError, waitSuccess])
-    
-    
-
-    const handleChange = (e:any) => {
-        setFormInput({...formInput, [e.target.name]: e.target.value})
-    }
-
-    const handleSubmit = (e:any) => {
-        e.preventDefault();
-        write?.();
-    }
-
-    const addAddress = () => {
-        if(excos.length < 5 && formInput.address != '') {
-            setExcos([...excos, formInput.address])
-        }
-    }
+    }, [waitError, waitSuccess, prepareError])
 
     return (
         <>
@@ -109,7 +129,7 @@ const CreateAccount = () => {
             {
                 openModal && (
                     <div className="fixed top-0 left-0 w-full z-40 bg-neutral-0.5 backdrop-blur-sm">
-                        <div className="min-h-screen mt-28 py-32">
+                        <div className="min-h-screen mt-28 py-24">
                             {/* Modal Content */}
                             <div className="bg-neutral-800 rounded-lg shadow-lg w-1/2 lg:w-2/5 xl:w-1/3 mx-auto divide-y divide-neutral-600 overflow-y-auto">
                                 {/* Modal Header */}
@@ -123,51 +143,60 @@ const CreateAccount = () => {
                                 </div>
                                 {/* Modal Body */}
                                 <div>
-                                    <form className="py-4 px-8" onSubmit={handleSubmit}>
+                                    <form className="py-4 px-8" onSubmit={handleSubmit(submitHandler)}>
                                         <div className="relative w-full mb-6 z-0 group">
                                             <input
-                                             type="text"
-                                             name="name"
-                                             className={`${customTheme.floating_input}`} 
-                                             placeholder=" " 
-                                             required
-                                             onChange={handleChange}
+                                             {...register("associationName", {
+                                                required: true,
+                                                pattern: /^[A-Za-z0-9_ ]+$/i
+                                             })}
+                                             className={`${customTheme.floating_input}`}
+                                             placeholder=" "
                                              autoComplete="off"
-                                             value={formInput.name}
                                             />
+                                            {errors?.associationName?.type === "required" && <p className="text-red-500 text-sm">This field is required</p>}
+                                            {errors?.associationName?.type === "pattern" && <p className="text-red-500 text-sm">Alphabetical characters only</p>}
                                             <label htmlFor="name" className={`${customTheme.floating_label}`}>Association Name</label>
                                         </div>
                                         <div className="relative w-full mb-6 z-0 group">
                                             <input
                                              type="password"
-                                             name="password"
-                                             id="password"
                                              className={`${customTheme.floating_input}`}
                                              placeholder=" "
-                                             required
-                                             onChange={handleChange}
-                                             value={formInput.password}
+                                             {...register("password", {
+                                                required: true,
+                                                pattern: /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
+                                             })}
                                             />
+                                            {errors?.password?.type === "required" && <p className="text-red-500 text-sm">This field is required</p>}
+                                            {errors?.password?.type === "pattern" && (
+                                                <p className="text-red-500 text-sm">
+                                                    Password must contain at least one lowercase, uppercase, number and 8 characters long
+                                                </p>
+                                            )}
                                             <label htmlFor="password" className={`${customTheme.floating_label}`}>Password</label>
                                         </div>
                                         <div className="relative w-full mb-2 z-0 group">
                                             <input
-                                             type="text"
-                                             name="address"
-                                             id="address"
+                                             {...register("address", {
+                                                required: true,
+                                                pattern: /(\b0x[A-fa-f0-9]{40}\b)/g
+                                             })}
                                              className={`${customTheme.floating_input}`}
                                              placeholder=" "
-                                             required
-                                             onChange={handleChange}
                                              autoComplete="off"
-                                             value={formInput.address}
                                             />
+                                            {errors?.address?.type === "required" && <p className="text-red-500 text-sm">This field is required</p>}
+                                            {errors?.address?.type === "pattern" && <p className="text-red-500 text-sm">Must be an ethereum address</p>}
+                                            {
+                                                (errors?.address?.type === "pattern" || watch("address") == "" || watch("address") == undefined) ?
+                                                "":
+                                                !watch("address")?.match(/(\b0x[A-fa-f0-9]{40}\b)/g) && <p className="text-red-500 text-sm">Must be an ethereum address</p>
+                                            }
                                             <label htmlFor="address" className={`${customTheme.floating_label}`}>Executive Address</label>
                                         </div>
                                         {
-                                            (excos.length == 5) ?
-                                            <p className="text-red-500 text-sm">Exco addresses can not be more than five</p>
-                                            : ""
+                                            (excos.length == 5) && <p className="text-red-500 text-sm">Exco addresses can not be more than five</p>
                                         }
                                         <div>
                                             <button
@@ -193,18 +222,13 @@ const CreateAccount = () => {
                                                 </div>
                                             )
                                         }
-                                        <p className='text-red-600'>
-                                            {
-                                                (prepareError && debouceValue.password != "") && "You cannot create account twice"
-                                            }
-                                        </p>
                                         <div className="flex justify-center mt-8">
                                             {
                                                 address ?
                                                 <button
                                                 type="submit"
                                                 className={`${customTheme.fill_button} text-neutral-800 mr-2 mb-2`}
-                                                disabled={writeLoading || waitLoading}
+                                                disabled={writeLoading || waitLoading || prepareError}
                                                 >
                                                     {
                                                         (writeLoading || waitLoading) ? "Loading..." : "Create Account"
