@@ -3,35 +3,39 @@ import { memo, useEffect, useState } from "react";
 import { customTheme } from "@/components/customTheme";
 import { useRouter } from "next/router";
 import { useContractSend } from "@/hooks/contract/useContractSend";
-import { useDebounce } from "use-debounce";
 import { useAccount } from "wagmi";
 import { CustomConnector } from "@/components/customConnector";
 import { toast } from "react-toastify";
 import { HexToDecimal } from '../../../components/helpers';
+import { useForm } from "react-hook-form";
+
+interface IFormInput {
+    amount: number
+}
 
 const Executives = () => {
     const route = useRouter()
     const {id:number} = route.query
-    const [amount, setAmount] = useState("")
-    const [debounceAmount] = useDebounce(amount, 500)
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors }
+    } = useForm<IFormInput>();
+
     const { address } = useAccount()
-
-
 
     const { writeLoading, write, waitError, writeError, prepareError, waitSuccess, waitLoading, waitData } = useContractSend({
         functionName: "initTransaction",
         args:[
-            isNaN(Number(debounceAmount)) ? "0" : BigInt(Number(debounceAmount) * 1e18),
+            isNaN(watch("amount")) ? "0" : BigInt(watch("amount") * 1e18),
             number
         ],
-        enabled: (debounceAmount != "")
+        enabled: (watch("amount") != 0)
     })
-    
 
-
-    const handleSubmit = (e:any) => {
-        e.preventDefault();
-
+    const submitHandler = () => {
         write?.()
     }
 
@@ -71,22 +75,23 @@ const Executives = () => {
     return (
         <ExecutiveLayout>
             <h5 className="text-center mb-2 font-bold py-4">Initiate Withdrawal</h5>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(submitHandler)}>
                 <div className="relative w-full mb-6 z-0 group">
                     <input
-                     type="tel"
-                     name="floating_deposit" 
-                     id="floating_deposit" 
+                     {...register("amount", {
+                        required: true,
+                        pattern: /^\d+\.?\d+$/
+                     })}
                      className={`${customTheme.floating_input}`} 
-                     placeholder=" " 
-                     required
+                     placeholder=" "
                      autoComplete="off"
-                     onChange={(e) => setAmount(e.target.value)}
                     />
+                    {errors?.amount?.type === "required" && <p className="text-red-500 text-sm">This field is required</p>}
+                    {errors?.amount?.type === "pattern" && <p className="text-red-500 text-sm">Number above zero only</p>}
                     <label htmlFor="floating_deposit" className={`${customTheme.floating_label}`}>Amount to withdraw</label>
-                    <p className="text-red-600">
+                    <p className="text-red-600 h-4">
                         {
-                            (prepareError && debounceAmount != "") && "You cannot initiate withdrawal"
+                           !errors?.amount && ((prepareError && watch("amount") != 0) && "You cannot initiate withdrawal")
                         }
                     </p>
                 </div>

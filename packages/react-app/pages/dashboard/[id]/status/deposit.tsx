@@ -7,36 +7,48 @@ import handler from '../../../api/hello';
 import { useDebounce } from "use-debounce";
 import { useContractCall } from "@/hooks/contract/useContractCall";
 import { toast } from "react-toastify";
+import { useForm } from "react-hook-form"
+
+interface IFormInput {
+    address: string
+}
 
 
 
 const Deposit = () => {
     const route = useRouter()
     const {id:number} = route.query
-    const { address } = useAccount()
-    const [user, setUser] = useState("")
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors }
+    } = useForm<IFormInput>();
+
     const [handler, setHandler] = useState<boolean>(false)
-    const [debounceAddress] = useDebounce(user, 500)
 
 
     const { data, error, isError }:any = useContractCall({
         functionName: "checkUserDeposit",
         args: [
             number,
-            handler && debounceAddress
+            handler && watch("address")
         ],
-        enabled: (handler && debounceAddress != "")
+        enabled: (handler)
     })
 
-    const handleSubmit = () => {
+    const submitHandler = () => {
         setHandler(true)
     }
 
+    console.log(data, "kjds")
+
     const handleResult = () => {
-        if(data){
-            return `${(Number(data) / 1e18).toLocaleString()} cUSD`
-        } else{
+        if(isNaN(Number(data))){
             return "0 cUSD"
+        }else {
+            return `${(Number(data) / 1e18).toLocaleString()} cUSD`
         }
     }
 
@@ -44,7 +56,7 @@ const Deposit = () => {
         let rerun:boolean = true
 
         if(isError && rerun && handler ){
-            toast.error(`${error?.cause.reason}`, {
+            toast.error(`${error?.cause?.reason}`, {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -56,38 +68,41 @@ const Deposit = () => {
 
         return () => {
             rerun = false
-            debounceAddress == "" && setHandler(false)
+            watch("address") == "" && setHandler(false)
         }
 
-    }, [isError, error?.cause.reason, handler, debounceAddress])
+    }, [isError, error?.cause?.reason, handler, watch])
 
 
     return (
         <div>
             <FormLayout result={handleResult()}>
                 <h5 className="text-center mb-2 font-bold">User Deposit</h5>
+                <form onSubmit={handleSubmit(submitHandler)}>
                     <div className="relative w-full mb-6 z-0 group">
                         <input
-                         type="text" 
-                         name="floating_deposit" 
-                         id="floating_deposit" 
+                         {...register("address", {
+                            required: true,
+                            pattern: /(\b0x[A-fa-f0-9]{40}\b)/g
+                         })}
                          className={`${customTheme.floating_input}`} 
-                         placeholder=" " 
-                         required
-                         onChange={(e) => setUser(e.target.value)}
+                         placeholder=" "
                          autoComplete="off"
                         />
+                        {errors?.address?.type === "required" && <p className="text-red-600 text-sm">This field is required</p>}
+                        {errors?.address?.type === "pattern" && <p className="text-red-600 text-sm">Must be an ethereum address</p>}
                         <label htmlFor="floating_deposit" className={`${customTheme.floating_label}`}>User Address</label>
                     </div>
                     <div className="flex justify-center mt-8">
                         <button
-                        type="button"
+                        type="submit"
                         className={`${customTheme.fill_button} text-neutral-800 mr-2 mb-2`}
-                        onClick={handleSubmit}
                         >
                             Check Deposit
                         </button>
                     </div>
+                </form>
+                    
             </FormLayout>
         </div>
     );

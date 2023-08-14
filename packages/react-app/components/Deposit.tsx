@@ -1,5 +1,4 @@
-import { memo, useEffect, useState } from "react";
-import { useDebounce } from "use-debounce";
+import { memo, useEffect } from "react";
 import { customTheme } from "./customTheme";
 import { useAccount, useWaitForTransaction } from "wagmi";
 import { useApproveToken } from "@/hooks/contract/useApproveToken";
@@ -7,21 +6,22 @@ import { assBankCA, useContractSend } from "@/hooks/contract/useContractSend";
 import { toast } from "react-toastify";
 import { CustomConnector } from "./customConnector";
 import { useTokenCall } from "@/hooks/contract/useTokenCall";
+import { useForm } from "react-hook-form";
 
 
-interface formType {
-    floating_number: string;
-    floating_amount: string;
+interface IFormInput {
+    accountNumber: number;
+    accountAmount: number;
 }
 
 // component that handles association member deposit
 const Deposit = () => {
-    const [formDetails, setFormDetails] = useState<formType>({
-        floating_number: '',
-        floating_amount: ''
-    })
-
-    const [{floating_amount, floating_number}] = useDebounce(formDetails, 500);
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors }
+    } = useForm<IFormInput>()
 
     const { address } = useAccount();
 
@@ -38,14 +38,14 @@ const Deposit = () => {
     const {writeLoading, write, waitError, waitSuccess, waitLoading} = useContractSend({
         functionName: "deposit",
         args: [
-            parseInt(floating_number),
-            isNaN(Number(floating_amount)) ? "0" : BigInt(Number(floating_amount) * 1e18)
+            parseInt(watch("accountNumber")?.toString()),
+            isNaN(watch("accountAmount")) ? "0" : BigInt(watch("accountAmount") * 1e18)
         ],
-        enabled: (Number(tokenData) >= (Number(floating_amount) * 1e18) && floating_amount != "" && floating_number != "") 
+        enabled: (Number(tokenData) >= (watch("accountAmount") * 1e18) && watch("accountAmount") != 0 && watch("accountNumber") != 0)
     })
 
     const { data, isLoading, write:tokenWrite } = useApproveToken({
-        price: floating_amount
+        price: watch("accountAmount")
     })
 
     const {isError:tokenError, isLoading:tokenLoading} = useWaitForTransaction({
@@ -57,23 +57,13 @@ const Deposit = () => {
     })
 
     const tokenAuthorization = () => {
-        const priceInput = Number(floating_amount) * 1e18
+        const priceInput = watch("accountAmount") * 1e18
 
         if(Number(tokenData) >= priceInput){
             write?.();
         } else{
             tokenWrite?.();
         }
-    }
-
-    const handleChange = (e:any) => {
-        setFormDetails({...formDetails, [e.target.name]: e.target.value})
-    }
-
-    const handleSubmit = (e:any) => {
-        e.preventDefault();
-
-        tokenAuthorization()
     }
 
     useEffect(() => {
@@ -112,33 +102,34 @@ const Deposit = () => {
     return (
         <div className="bg-neutral-800 w-1/2 mx-auto mt-24 rounded-lg p-8">
             <h2 className="font-bold">Member Deposit</h2>
-            <form className="mt-8" onSubmit={handleSubmit}>
+            <form className="mt-8" onSubmit={handleSubmit(tokenAuthorization)}>
                 <div className="relative w-full mb-6 z-0 group">
                     <input
+                     {...register("accountNumber", {
+                        required: true,
+                        pattern: /[0-9]{4}/g
+                     })}
                      type="tel"
-                     pattern="[0-9]{0,}"
-                     name="floating_number" 
-                     id="floating_number" 
                      className={`${customTheme.floating_input}`} 
-                     placeholder=" " 
-                     required
-                     onChange={handleChange}
+                     placeholder=" "
                      autoComplete="off"
                     />
+                    {errors?.accountNumber?.type === "required" && <p className="text-red-600 text-sm">This field is required</p>}
+                    {errors?.accountNumber?.type === "pattern" && <p className="text-red-600 text-sm">Input a valid account number</p>}
                     <label htmlFor="floating_number" className={`${customTheme.floating_label}`}>Account Number</label>
                 </div>
                 <div className="relative w-full mb-6 z-0 group">
                     <input
-                     type="tel"
-                     pattern="[0-9]{0,}"
-                     name="floating_amount" 
-                     id="floating_amount" 
+                     {...register("accountAmount", {
+                        required: true,
+                        pattern: /^\d+\.?\d+$/
+                     })}
                      className={`${customTheme.floating_input}`} 
-                     placeholder=" " 
-                     required
-                     onChange={handleChange}
+                     placeholder=" "
                      autoComplete="off"
                     />
+                    {errors?.accountAmount?.type === "required" && <p className="text-red-600 text-sm">This field is required</p>}
+                    {errors?.accountAmount?.type === "pattern" && <p className="text-red-600 text-sm">Number above zero only</p>}
                     <label htmlFor="floating_amount" className={`${customTheme.floating_label}`}>Amount to Deposit</label>
                 </div>
                 <div className="flex justify-center mt-8">
@@ -155,7 +146,6 @@ const Deposit = () => {
                         </button>:
                         <CustomConnector color="bg-goldenyellow" text="text-black" />
                     }
-                    
                 </div>
             </form>
         </div>

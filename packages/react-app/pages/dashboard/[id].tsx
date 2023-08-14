@@ -4,18 +4,27 @@ import { useApproveToken } from "@/hooks/contract/useApproveToken";
 import { assBankCA, useContractSend } from "@/hooks/contract/useContractSend";
 import { useTokenCall } from "@/hooks/contract/useTokenCall";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { useDebounce } from "use-debounce";
+import { useEffect } from "react";
 import { useAccount, useWaitForTransaction } from "wagmi";
 import { toast } from "react-toastify";
 import { CustomConnector } from '../../components/customConnector';
+import { useForm } from "react-hook-form";
+
+interface IFormInput {
+    amount: number;
+}
 
 const DashBoard = () => {
     const router = useRouter()
     const {id:number} = router.query
-    
-    const [amount, setAmount] = useState("")
-    const [debounceAmount] = useDebounce(amount, 500)
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors }
+    } = useForm<IFormInput>();
+
     const {address} = useAccount()
 
     const {data:tokenData} = useTokenCall({
@@ -31,13 +40,13 @@ const DashBoard = () => {
         functionName: "deposit",
         args: [
             number,
-            isNaN(Number(debounceAmount)) ? "0" : BigInt(Number(debounceAmount) * 1e18)
+            isNaN(watch("amount")) ? "0" : BigInt(watch("amount") * 1e18)
         ],
-        enabled: (Number(tokenData) >= (Number(debounceAmount) * 1e18) && debounceAmount != "")
+        enabled: (Number(tokenData) >= (watch("amount") * 1e18) && watch("amount") != 0)
     })
     
     const { data, isLoading, write:tokenWrite } = useApproveToken({
-        price: debounceAmount
+        price: watch("amount")
     })
 
     const {isError:tokenError, isLoading:tokenLoading} = useWaitForTransaction({
@@ -48,21 +57,14 @@ const DashBoard = () => {
         }
     })
 
-
     const tokenAuthorization = () => {
-        const priceInput = Number(debounceAmount) * 1e18
+        const priceInput = watch("amount") * 1e18
 
         if(Number(tokenData) >= priceInput){
             write?.();
         } else{
             tokenWrite?.();
         }
-    }
-
-    const handleSubmit = (e:any) => {
-        e.preventDefault();
-
-        tokenAuthorization()
     }
 
     useEffect(() => {
@@ -99,19 +101,19 @@ const DashBoard = () => {
         <DashboardLayout>
             <div className="bg-neutral-800 w-2/3 mx-auto my-12 rounded-lg p-8">
                 <h2 className="font-bold text-center">Deposit</h2>
-                <form className="mt-8" onSubmit={handleSubmit}>
+                <form className="mt-8" onSubmit={handleSubmit(tokenAuthorization)}>
                     <div className="relative w-full mb-6 z-0 group">
-                    <input
-                     type="tel"
-                     pattern="[0-9]{0,}"
-                     name="floating_deposit"
-                     id="floating_deposit"
-                     className={`${customTheme.floating_input}`}
-                     placeholder=" "
-                     required
-                     onChange={(e) => setAmount(e.target.value)}
-                     autoComplete="off"
-                    />
+                        <input
+                        {...register("amount", {
+                            required: true,
+                            pattern: /^\d+\.?\d+$/
+                        })}
+                        className={`${customTheme.floating_input}`}
+                        placeholder=" "
+                        autoComplete="off"
+                        />
+                        {errors?.amount?.type === "required" && <p className="text-red-600 text-sm">This field is required</p>}
+                        {errors?.amount?.type === "pattern" && <p className="text-red-600 text-sm">Number above zero only</p>}
                         <label htmlFor="floating_deposit" className={`${customTheme.floating_label}`}>Amount to Deposit</label>
                     </div>
                     <div className="flex justify-center mt-8">

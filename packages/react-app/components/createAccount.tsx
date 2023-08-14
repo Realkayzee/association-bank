@@ -21,9 +21,9 @@ interface IFormInput {
 const CreateAccount = () => {
     const [openModal, setOpenModal] = useState<boolean>(false);
 
-    const {address} = useAccount();
+    const [showpassword, setShowpassword] = useState(false)
 
-    
+    const {address} = useAccount();
 
     const {
         register,
@@ -35,18 +35,13 @@ const CreateAccount = () => {
 
     const [excos, setExcos] = useState<string[]>([]);
 
-    const [inputedData, setInputedData] = useState({
-        name: '',
-        password: ''
-    })
-
     const { writeLoading, write, waitError, waitSuccess, waitLoading, prepareError } = useContractSend({
         functionName: "createAccount",
         args: [
-            inputedData.name,
+            watch("associationName"),
             excos,
             (excos.length).toString(),
-            inputedData.password
+            watch("password")
         ],
         enabled: (excos.length > 0)
     })
@@ -57,17 +52,14 @@ const CreateAccount = () => {
         }
     }
 
-    const submitHandler = (data:IFormInput) => {
-        setInputedData({
-            name: data.associationName,
-            password: data.password
-        })
+    const submitHandler = () => {
         write?.()
     }
-    console.log(prepareError,inputedData, "watch");
 
+    const handlePassword = () => {
+        setShowpassword(!showpassword)
+    }
     
-
     useEffect(() => {
         let rerun:boolean = true;
 
@@ -154,13 +146,13 @@ const CreateAccount = () => {
                                              placeholder=" "
                                              autoComplete="off"
                                             />
-                                            {errors?.associationName?.type === "required" && <p className="text-red-500 text-sm">This field is required</p>}
-                                            {errors?.associationName?.type === "pattern" && <p className="text-red-500 text-sm">Alphabetical characters only</p>}
+                                            {errors?.associationName?.type === "required" && <p className="text-red-600 text-sm">This field is required</p>}
+                                            {errors?.associationName?.type === "pattern" && <p className="text-red-600 text-sm">Alphabetical characters only</p>}
                                             <label htmlFor="name" className={`${customTheme.floating_label}`}>Association Name</label>
                                         </div>
                                         <div className="relative w-full mb-6 z-0 group">
                                             <input
-                                             type="password"
+                                             type= {showpassword ? "text" : "password"}
                                              className={`${customTheme.floating_input}`}
                                              placeholder=" "
                                              {...register("password", {
@@ -168,9 +160,15 @@ const CreateAccount = () => {
                                                 pattern: /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
                                              })}
                                             />
-                                            {errors?.password?.type === "required" && <p className="text-red-500 text-sm">This field is required</p>}
+                                            <p
+                                             className="my-2 cursor-pointer font-bold text-sm"
+                                             onClick={handlePassword}
+                                            >
+                                                {showpassword ? "hide": "show"}
+                                            </p>
+                                            {errors?.password?.type === "required" && <p className="text-red-600 text-sm">This field is required</p>}
                                             {errors?.password?.type === "pattern" && (
-                                                <p className="text-red-500 text-sm">
+                                                <p className="text-red-600 text-sm">
                                                     Password must contain at least one lowercase, uppercase, number and 8 characters long
                                                 </p>
                                             )}
@@ -186,17 +184,17 @@ const CreateAccount = () => {
                                              placeholder=" "
                                              autoComplete="off"
                                             />
-                                            {errors?.address?.type === "required" && <p className="text-red-500 text-sm">This field is required</p>}
-                                            {errors?.address?.type === "pattern" && <p className="text-red-500 text-sm">Must be an ethereum address</p>}
+                                            {errors?.address?.type === "required" && <p className="text-red-600 text-sm">This field is required</p>}
+                                            {errors?.address?.type === "pattern" && <p className="text-red-600 text-sm">Must be an ethereum address</p>}
                                             {
                                                 (errors?.address?.type === "pattern" || watch("address") == "" || watch("address") == undefined) ?
                                                 "":
-                                                !watch("address")?.match(/(\b0x[A-fa-f0-9]{40}\b)/g) && <p className="text-red-500 text-sm">Must be an ethereum address</p>
+                                                !watch("address")?.match(/(\b0x[A-fa-f0-9]{40}\b)/g) && <p className="text-red-600 text-sm">Must be an ethereum address</p>
                                             }
                                             <label htmlFor="address" className={`${customTheme.floating_label}`}>Executive Address</label>
                                         </div>
                                         {
-                                            (excos.length == 5) && <p className="text-red-500 text-sm">Exco addresses can not be more than five</p>
+                                            (excos.length == 5) && <p className="text-red-600 text-sm">Exco addresses can not be more than five</p>
                                         }
                                         <div>
                                             <button

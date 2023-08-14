@@ -3,30 +3,37 @@ import { CustomConnector } from "@/components/customConnector";
 import { customTheme } from "@/components/customTheme";
 import { useContractSend } from "@/hooks/contract/useContractSend";
 import { useRouter } from "next/router";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect } from "react";
 import { toast } from "react-toastify";
-import { useDebounce } from "use-debounce";
 import { useAccount } from "wagmi";
+import { useForm } from "react-hook-form";
+
+interface IFormInput {
+    order: number;
+}
 
 const Revert = () => {
     const route = useRouter()
     const {id:number} = route.query
     const { address } = useAccount()
-    const [order, setOrder] = useState("")
-    const [debounceOrder] = useDebounce(order, 500)
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors }
+    } = useForm<IFormInput>()
 
     const { writeLoading, write, waitError, writeError, prepareError, waitSuccess, waitLoading } = useContractSend({
         functionName: "revertApproval",
         args: [
             number,
-            debounceOrder
+            watch("order")
         ],
-        enabled: (debounceOrder != "")
+        enabled: (watch("order") != 0)
     })
     
-    const handleSubmit = (e:any) => {
-        e.preventDefault();
-
+    const submitHandler = () => {
         write?.()
     }
 
@@ -64,22 +71,23 @@ const Revert = () => {
     return (
         <ExecutiveLayout>
             <h5 className="text-center mb-2 font-bold py-4">Revert Approval</h5>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(submitHandler)}>
                 <div className="relative w-full mb-6 z-0 group">
                     <input
-                     type="number"
-                     name="floating_deposit" 
-                     id="floating_deposit" 
+                     {...register("order", {
+                        required: true,
+                        pattern: /^[1-9]+$/
+                     })}
                      className={`${customTheme.floating_input}`} 
-                     placeholder=" " 
-                     required
-                     onChange={(e) => setOrder(e.target.value)}
+                     placeholder=" "
                      autoComplete="off"
                     />
+                    {errors?.order?.type === "required" && <p className="text-red-500 text-sm">This field is required</p>}
+                    {errors?.order?.type === "pattern" && <p className="text-red-500 text-sm">Number above zero only</p>}
                     <label htmlFor="floating_deposit" className={`${customTheme.floating_label}`}>Order Number</label>
-                    <p className="text-red-600">
+                    <p className="text-red-600 h-4">
                         {
-                            (prepareError && debounceOrder != "") && "You cannot revert approval"
+                            !errors?.order && ((prepareError && watch("order") != 0) && "You cannot revert approval")
                         }
                     </p>
                 </div>

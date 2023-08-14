@@ -1,33 +1,39 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect } from 'react';
 import ExecutiveLayout from '@/components/ExecutiveLayout';
 import { customTheme } from '@/components/customTheme';
 import { useRouter } from 'next/router';
-import { useDebounce } from 'use-debounce';
 import { useAccount } from 'wagmi';
 import { useContractSend } from '@/hooks/contract/useContractSend';
 import { toast } from 'react-toastify';
 import { CustomConnector } from '@/components/customConnector';
+import { useForm } from 'react-hook-form';
+
+interface IFormInput {
+    order: number;
+}
 
 const Approve = () => {
     const route = useRouter()
     const {id:number} = route.query
     const { address } = useAccount()
-    const [order, setOrder] = useState("")
-    const [debounceOrder] = useDebounce(order, 500)
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors }
+    } = useForm<IFormInput>()
 
     const { writeLoading, write, waitError, writeError, prepareError, waitSuccess, waitLoading } =useContractSend({
         functionName: "approveWithdrawal",
         args: [
-            debounceOrder,
+            watch("order"),
             number
         ],
-        enabled: (debounceOrder != "")
+        enabled: (watch("order") != 0)
     })
 
-
-    const handleSubmit = (e:any) => {
-        e.preventDefault();
-
+    const submitHandler = () => {
         write?.();
     }
 
@@ -65,22 +71,23 @@ const Approve = () => {
     return (
         <ExecutiveLayout>
             <h5 className="text-center mb-2 font-bold py-4">Approve Withdrawal</h5>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(submitHandler)}>
                 <div className="relative w-full mb-6 z-0 group">
                     <input
-                     type="number"
-                     name="floating_deposit"
-                     id="floating_deposit"
+                     {...register("order", {
+                        required: true,
+                        pattern: /^[1-9]+$/
+                     })}
                      className={`${customTheme.floating_input}`} 
                      placeholder=" "
-                     required
-                     onChange={(e) => setOrder(e.target.value)}
                      autoComplete='off'
                     />
+                    {errors?.order?.type === "required" && <p className="text-red-600 text-sm">This field is required</p>}
+                    {errors?.order?.type === "pattern" && <p className="text-red-600 text-sm">Number above zero only</p>}
                     <label htmlFor="floating_deposit" className={`${customTheme.floating_label}`}>Order Number</label>
-                    <p className='text-red-600'>
+                    <p className='text-red-600 text-sm h-4'>
                         {
-                            (prepareError && debounceOrder != "") && "You cannot approve withdrawal"
+                           !errors?.order && ((prepareError && watch("order") != 0) && "You cannot approve withdrawal")
                         }
                     </p>
                 </div>

@@ -11,7 +11,7 @@ interface sendParameterProps {
     enabled?: boolean;
 }
 
-export const assBankCA = "0x9241B1215AeF22b51a1eCCb59BeB3f72F15358F9";
+export const assBankCA = "0xD51f7530123515629D901A40b15c1361D57813fB";
 
 
 export const useContractSend = ({functionName, args, enabled}:sendParameterProps) => {
