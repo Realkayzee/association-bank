@@ -23,7 +23,7 @@ The genesis of each account start from creating an account with the "create acco
 The dashboard is the point of interacting and viewing various activities done by an association
 
 * User can deposit into the association account by using the deposit tag
-* Executive can control their portion of the account by accessing the executive page
+* Executive can control their portion of the account by accessing the executive page (Only excos can interact successfully in this page)
 * The executive page consist of four internal tabs which are: initiate withdrawal, approve withdrawal, revert withdrawal, withdraw.
     - Initiate withdrawal is used when any executive member wants to withdraw from the association (This is the starting point of withdrawal)
     - By initiating a withdrawal, withdrawal order is being returned which can be used for approval and final withdrawal.
@@ -31,4 +31,16 @@ The dashboard is the point of interacting and viewing various activities done by
     - In case any executive member changed his/her mind, he/she can revert his/her approval.
     - After successful approval by other executive member, the withdrawal initiator can therefore withdraw fully.
 * The status tab in the dashboard is available for any member to check the status of any transaction in the association for transparency
-* Member of an association can view association balance by using the association password
+    - Member of an association can view association balance by inputting the association password
+    - The approval count tab is to check the number of approval a particular order number as attained
+    - Exco request is for anybody to check the amount of withdrawal an exco initiated by inputting the order number
+    - User deposit is to check the amount a particular user deposited into the association
+
+## Some packages used
+- tailwindcss
+- headlessui
+- heroicons
+- react-hook-form
+- wagmi
+- rainbowkit-celo
+- react-toastify

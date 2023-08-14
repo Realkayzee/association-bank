@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import FormLayout from "@/components/FormLayout";
 import { customTheme } from "@/components/customTheme";
 import { useRouter } from "next/router";
-import { useAccount } from "wagmi";
-import { useDebounce } from "use-debounce";
 import { useContractCall } from "@/hooks/contract/useContractCall";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";

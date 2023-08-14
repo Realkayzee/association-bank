@@ -5,7 +5,6 @@ import { useContractSend } from "@/hooks/contract/useContractSend";
 import { useRouter } from "next/router";
 import { memo, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useDebounce } from "use-debounce";
 import { useAccount } from "wagmi";
 import { useForm } from "react-hook-form";
 
@@ -25,9 +24,6 @@ const Withdraw = () => {
         watch,
         formState: { errors }
     } = useForm<IFormInput>()
-
-    const [order, setOrder] = useState("")
-    const [debounceOrder] = useDebounce(order, 500)
 
     const { writeLoading, write, waitError, writeError, prepareError, waitSuccess, waitLoading } = useContractSend({
         functionName: "withdrawal",
@@ -93,7 +89,7 @@ const Withdraw = () => {
                     <label htmlFor="floating_deposit" className={`${customTheme.floating_label}`}>Order Number</label>
                     <p className="text-red-600 text-sm h-4">
                         {
-                            !errors?.order && ((prepareError && debounceOrder != "") && "You cannot withdraw")
+                            !errors?.order && ((prepareError && watch("order") != 0) && "You cannot withdraw")
                         }
                     </p>
                 </div>
