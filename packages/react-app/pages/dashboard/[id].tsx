@@ -106,7 +106,7 @@ const DashBoard = () => {
                         <input
                         {...register("amount", {
                             required: true,
-                            pattern: /^\d+\.?\d+$/
+                            pattern: /^\d*\.?\d*$/
                         })}
                         className={`${customTheme.floating_input}`}
                         placeholder=" "

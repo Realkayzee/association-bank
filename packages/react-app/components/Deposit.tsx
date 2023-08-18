@@ -122,7 +122,7 @@ const Deposit = () => {
                     <input
                      {...register("accountAmount", {
                         required: true,
-                        pattern: /^\d+\.?\d+$/
+                        pattern: /^\d*\.?\d*$/
                      })}
                      className={`${customTheme.floating_input}`} 
                      placeholder=" "
