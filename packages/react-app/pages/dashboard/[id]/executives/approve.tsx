@@ -1,3 +1,4 @@
+// Import custom hook, wagmi hook and react form hook
 import { memo, useEffect } from 'react';
 import ExecutiveLayout from '@/components/ExecutiveLayout';
 import { customTheme } from '@/components/customTheme';
@@ -12,6 +13,8 @@ interface IFormInput {
     order: number;
 }
 
+// Approve component is responsible for approving withrawal by executive members
+// The logic contains standard input check form to avoid placing unwanted values
 const Approve = () => {
     const route = useRouter()
     const {id:number} = route.query

@@ -31,6 +31,7 @@ const statusButtons: statusProps[] = [
     }
 ]
 
+// This component is a layout for tabs in status tab of association dashboard
 const FormLayout = (props:Props) => {
     const router = useRouter()
     const {id:ID} = router.query

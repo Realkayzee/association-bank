@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CustomConnector } from "./customConnector";
 import { customTheme } from "./customTheme";
 
-
+// The header component logo, navbar and connect button
 export default function Header() {
 
   // Interface for the navigation items

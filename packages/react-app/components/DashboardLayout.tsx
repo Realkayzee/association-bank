@@ -6,6 +6,7 @@ interface Props {
     children: ReactNode;
 }
 
+// custom sidebar type
 interface sidebar {
     name: string,
     link: string
@@ -28,9 +29,11 @@ const sideItems:sidebar[] = [
     }
 ]
 
+
+// Layout for association dashboard
 const DashboardLayout: FC<Props> = ({children}) => {
     const router = useRouter()
-    const {id:ID} = router.query    
+    const {id:ID} = router.query
 
     return (
         <div className="py-24">

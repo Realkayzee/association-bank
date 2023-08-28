@@ -12,6 +12,8 @@ interface IFormInput {
     order: number;
 }
 
+// This component contains the logic for reverting withdrawal made by an exco after approving
+// An exco can revert only after approving a withdrawal and have a change of mind
 const Revert = () => {
     const route = useRouter()
     const {id:number} = route.query

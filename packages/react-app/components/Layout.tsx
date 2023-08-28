@@ -29,6 +29,8 @@ const lato = Lato({
 interface Props {
     children: ReactNode;
 }
+
+// The default layout for the whole app
 const Layout: FC<Props> = ({ children }) => {
     return (
         // setup for font family

@@ -1,3 +1,4 @@
+// import form layout, custom hook, toastify and react form hook
 import React, { useEffect, useState } from "react";
 import FormLayout from "@/components/FormLayout";
 import { customTheme } from "@/components/customTheme";
@@ -10,7 +11,7 @@ interface IFormInput {
     address: string
 }
 
-
+// Deposit component is responsible for depositing into association account
 const Deposit = () => {
     const route = useRouter()
     const {id:number} = route.query

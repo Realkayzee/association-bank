@@ -28,6 +28,7 @@ const navigation = [
     }
   ]
   
+  // Component responsible for styling association bank footer
   export default function Footer() {
     return (
       <footer className="bg-gray15 mt-auto border-black border-t">

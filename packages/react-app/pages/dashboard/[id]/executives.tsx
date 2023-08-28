@@ -1,5 +1,6 @@
+// import executive layout, custom hook, helper function and react hook form
 import ExecutiveLayout from "@/components/ExecutiveLayout";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect } from "react";
 import { customTheme } from "@/components/customTheme";
 import { useRouter } from "next/router";
 import { useContractSend } from "@/hooks/contract/useContractSend";
@@ -13,6 +14,8 @@ interface IFormInput {
     amount: number
 }
 
+// This is the first page of executive tab
+// The component is responsible for initiating withdrawal
 const Executives = () => {
     const route = useRouter()
     const {id:number} = route.query

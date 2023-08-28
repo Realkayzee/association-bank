@@ -1,3 +1,4 @@
+// import connectButton from rainbowkit, helps in connecting to user's wallet
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 
@@ -7,9 +8,9 @@ interface customProp {
 }
 
 
+// Style the connector button to meet our app needs and design
 export const CustomConnector = (props: customProp) => {
     const {color, text} = props
-    
 
     return (
         <ConnectButton.Custom>

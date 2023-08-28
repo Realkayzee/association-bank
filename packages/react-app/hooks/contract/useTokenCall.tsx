@@ -1,3 +1,4 @@
+// import wagmi hook, token contract abi, token deployed contract address and parameter type
 import { useContractRead } from "wagmi";
 import tokenAbi from "@/abi/erc20ABI.json";
 import { cUSDCA } from "./useApproveToken";

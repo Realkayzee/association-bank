@@ -1,3 +1,5 @@
+// import dashboard layout, custom hooks, deployed contract address
+// wagmi hooks, toastify and react form hook
 import DashboardLayout from "@/components/DashboardLayout";
 import { customTheme } from "@/components/customTheme";
 import { useApproveToken } from "@/hooks/contract/useApproveToken";

@@ -9,6 +9,7 @@ import { CustomConnector } from "./customConnector";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 
+// custom form type for user input
 interface IFormInput {
     associationName: string,
     password: string,
@@ -17,7 +18,6 @@ interface IFormInput {
 
 
 // Component responsible for creating association account
-
 const CreateAccount = () => {
     const [openModal, setOpenModal] = useState<boolean>(false);
 
@@ -177,7 +177,6 @@ const CreateAccount = () => {
                                         <div className="relative w-full mb-2 z-0 group">
                                             <input
                                              {...register("address", {
-                                                required: true,
                                                 pattern: /(\b0x[A-fa-f0-9]{40}\b)/g
                                              })}
                                              className={`${customTheme.floating_input}`}

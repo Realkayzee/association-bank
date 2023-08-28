@@ -1,9 +1,12 @@
+// import useContractCall hook to read association bank data
 import React from "react";
 import { customTheme } from "./customTheme";
 import Link from "next/link";
 import { useContractCall } from "@/hooks/contract/useContractCall";
 
 
+// Associaition list component is responsible for getting all created association in
+// associationBank contract
 const AssociationList = () => {
 
     const {data}:any = useContractCall({

@@ -1,3 +1,4 @@
+// import layout, custom hook, toastify and react form hook
 import React, { useEffect, useState } from "react";
 import FormLayout from "@/components/FormLayout";
 import { customTheme } from "@/components/customTheme";
@@ -11,6 +12,8 @@ interface IFormInput {
     password: string;
 }
 
+// This is the first appearance of status tab
+// The component is responsible for checking association balance by specifying the association account
 const Status = () => {
     const route = useRouter()
     const {id:number} = route.query
@@ -69,7 +72,7 @@ const Status = () => {
 
         return () => {
             rerun = false
-            watch("password") == "" && setHandler(false)
+            isError && setHandler(false)
         }
 
     }, [isError, error?.cause.reason, handler, watch])

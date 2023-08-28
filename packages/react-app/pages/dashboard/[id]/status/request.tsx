@@ -1,3 +1,4 @@
+// import form layout, custom hook, toastify and react form hook
 import { memo, useEffect, useState } from "react";
 import FormLayout from "@/components/FormLayout";
 import { customTheme } from "@/components/customTheme";
@@ -12,7 +13,7 @@ interface IFormInput {
 }
 
 
-
+// Request component is used to check the amount requested by an Exco
 const Request = () => {
     const route = useRouter()
     const {id:number} = route.query

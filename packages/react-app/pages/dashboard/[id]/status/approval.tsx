@@ -1,3 +1,4 @@
+// import layout, custom hook, and react hook form
 import React, { useEffect, useState } from "react";
 import FormLayout from "@/components/FormLayout";
 import { customTheme } from "@/components/customTheme";
@@ -10,7 +11,7 @@ interface IFormInput {
     order: number;
 }
 
-
+// Approval component is responsible for checking approval count of an initiated withdrawal
 const Approval = () => {
     const route = useRouter()
     const {id:number} = route.query

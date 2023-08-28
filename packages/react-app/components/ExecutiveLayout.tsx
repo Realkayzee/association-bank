@@ -28,6 +28,7 @@ const executiveButtons: statusProps[] = [
     }
 ]
 
+// Layout component for executive tab in dashboard
 const ExecutiveLayout = (props:Props) => {
     const router = useRouter()
     const {id:ID} = router.query

@@ -1,9 +1,10 @@
+// Import executivelayout, custom hook, wagmi hook and react form hook
 import ExecutiveLayout from "@/components/ExecutiveLayout";
 import { CustomConnector } from "@/components/customConnector";
 import { customTheme } from "@/components/customTheme";
 import { useContractSend } from "@/hooks/contract/useContractSend";
 import { useRouter } from "next/router";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import { useForm } from "react-hook-form";
@@ -13,6 +14,8 @@ interface IFormInput {
 }
 
 
+
+// Component responsible for withrawing out of an association
 const Withdraw = () => {
     const route = useRouter()
     const {id:number} = route.query

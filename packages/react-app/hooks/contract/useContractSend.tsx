@@ -1,6 +1,5 @@
-// This hook is used to send transaction
 // import wagmi hook to prepare and write to a smart contract
-
+// import contract abi
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import associationAbi from "@/abi/association.abi.json";
 
@@ -10,10 +9,11 @@ interface sendParameterProps {
     args?: Array<any>;
     enabled?: boolean;
 }
-
+// association bank deployed contract address
 export const assBankCA = "0xD51f7530123515629D901A40b15c1361D57813fB";
 
 
+// This hook is used to send transaction
 export const useContractSend = ({functionName, args, enabled}:sendParameterProps) => {
     // Prepare write to smart contract
 

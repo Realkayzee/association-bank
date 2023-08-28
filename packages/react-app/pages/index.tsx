@@ -1,9 +1,11 @@
+// import various needed component
 import AssociationList from "@/components/AssociationList";
 import Deposit from "@/components/Deposit";
 import CreateAccount from "@/components/createAccount";
 import React from "react";
 import 'react-toastify/dist/ReactToastify.css';
 
+// This is the homepage component entry to other components
 function Home() {
 
   return (

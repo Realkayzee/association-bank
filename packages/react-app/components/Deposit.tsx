@@ -1,3 +1,5 @@
+// import our custom hook, hooks from wagmi, associationBank deployed contract address and
+// react-toastify to toast alert
 import { memo, useEffect } from "react";
 import { customTheme } from "./customTheme";
 import { useAccount, useWaitForTransaction } from "wagmi";
@@ -6,7 +8,7 @@ import { assBankCA, useContractSend } from "@/hooks/contract/useContractSend";
 import { toast } from "react-toastify";
 import { CustomConnector } from "./customConnector";
 import { useTokenCall } from "@/hooks/contract/useTokenCall";
-import { useForm } from "react-hook-form";
+import { useForm } from "react-hook-form"; // useForm hook from react-hook-form to handle required pattern for input field
 
 
 interface IFormInput {
@@ -14,7 +16,7 @@ interface IFormInput {
     accountAmount: number;
 }
 
-// component that handles association member deposit
+// component that handles user's deposit to various association
 const Deposit = () => {
     const {
         register,
