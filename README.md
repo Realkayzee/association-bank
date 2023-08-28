@@ -1,5 +1,5 @@
 
-# About the project 
+# About the project
 
 ## Association bank
 Association bank is an association based bank where members of association can deposit into association banks and only excutive members can withdraw, the withdrawal of any executive member can  only be possible with the approval of other executive members (similar to multisig wallet).
@@ -36,7 +36,7 @@ The dashboard is the point of interacting and viewing various activities done by
     - Exco request is for anybody to check the amount of withdrawal an exco initiated by inputting the order number
     - User deposit is to check the amount a particular user deposited into the association
 
-## Some packages used
+## Tech Stack
 - tailwindcss
 - headlessui
 - heroicons
@@ -44,3 +44,37 @@ The dashboard is the point of interacting and viewing various activities done by
 - wagmi
 - rainbowkit-celo
 - react-toastify
+
+
+## Prerequisites
+- Node
+- Git(v2.38 or higher)
+
+## Starter Guide
+To get this project up running locally, follow these simple steps:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/Realkayzee/association-bank.git
+   ```
+
+2. Navigate to the `react-app` directory:
+
+   ```bash
+   cd association-bank/packages/react-app
+   ```
+
+3. Install the dependencies:
+
+   ```bash
+   yarn install
+   ```
+
+4. Run the dapp:
+   ```bash
+   yarn run dev
+   ```
+
+## Testing
+Use [this link :link:](https://github.com/Realkayzee/association-bank.git) to test the app and explore it's amazing functionalities
